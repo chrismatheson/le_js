@@ -77,7 +77,7 @@
         var _active = false;
         /** @type {boolean} */
         var _sentPageInfo = false;
-        
+
         if (options.catchall) {
             var oldHandler = window.onerror;
             var newHandler = function(msg, url, line) {
@@ -287,7 +287,7 @@
             endpoint: null,
             token: null
         };
-        
+
         if (typeof options === "object")
             for (var k in options)
                 dict[k] = options[k];
@@ -324,9 +324,15 @@
         };
     }
 
-    // Array of Logger elements
+    /**
+     * @description internal has of logstreams agaisnt names
+     */
     var loggers = {};
 
+    /**
+     * @description internal logstream hash accessor
+     * @param {String} name to look up in hash
+     */
     var _getLogger = function(name) {
         if (!loggers.hasOwnProperty(name))
            throw new Error("Invalid name for logStream");
@@ -334,6 +340,10 @@
         return loggers[name];
     };
 
+    /**
+     * create a new log stream and sotre in an internal hash agisnt options.name
+     * @param {Object} has of log stream options
+     */
     var  _createLogStream = function(options) {
         if (typeof options.name !== "string")
             throw new Error("Name not present.");
@@ -344,6 +354,9 @@
         return true;
     };
 
+    /**
+     * @param {(String|Object)} has of log options to use for logger (name: "default") or token to use with default options
+     */
     var _deprecatedInit = function(options) {
         var dict = {
             name : "default"
@@ -374,18 +387,30 @@
         createLogStream: _createLogStream,
         to: _getLogger,
         destroy: _destroyLogStream,
+        /**
+         * @description sends arguments log function of all current logstreams
+         */
         log: function() {
             for (var k in loggers)
                 loggers[k].log.apply(this, arguments);
         },
+        /**
+         * @description sends arguments warn function of all current logstreams
+         */
         warn: function() {
             for (var k in loggers)
                 loggers[k].warn.apply(this, arguments);
         },
+        /**
+         * @description sends arguments error function of all current logstreams
+         */
         error: function() {
             for (var k in loggers)
                 loggers[k].error.apply(this, arguments);
         },
+        /**
+         * @description sends arguments info function of all current logstreams
+         */
         info: function() {
             for (var k in loggers)
                 loggers[k].info.apply(this, arguments);
